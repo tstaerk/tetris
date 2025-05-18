@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><base target="_top"><style>.btn{margin:4px;padding:8px 12px;font-size:14px;} .controls{text-align:center;padding:8px;}</style></head>
+<body>
+  <div class="controls">
+    <button class="btn" onclick="google.script.run.moveLeft();">←</button>
+    <button class="btn" onclick="google.script.run.rotatePiece();">⟳</button>
+    <button class="btn" onclick="google.script.run.moveRight();">→</button>
+    <button class="btn" onclick="google.script.run.dropPiece();">↓</button>
+  </div>
+  <script>
+    document.addEventListener('keydown',function(e){
+      switch(e.keyCode){case 37:google.script.run.moveLeft();break;case 39:google.script.run.moveRight();break;case 40:google.script.run.dropPiece();break;case 88:google.script.run.rotatePiece();break;}
+    });
+  </script>
+</body>
+</html>
