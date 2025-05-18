@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+
+
+
+  <!-- Transparenter Hintergrund -->
+  <rect width="32" height="32" fill="black"/>
+  <!-- Grüner Rahmen -->
+
+  <!-- upper left -->
+  <rect x="3" y="3" width="9" height="9" fill="none" stroke="#2ecc71" stroke-width="1"/>
+  <!-- Diagonale Linie von oben-links nach unten-rechts -->
+  <line x1="3" y1="3" x2="12" y2="12" stroke="#2ecc71" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- second -->
+  <rect x="12" y="3" width="9" height="9" fill="none" stroke="#2ecc71" stroke-width="1"/>
+  <!-- Diagonale Linie von oben-links nach unten-rechts -->
+  <line x1="12" y1="3" x2="21" y2="12" stroke="#2ecc71" stroke-width="1" stroke-linecap="round"/>
+
+  <!--third-->
+  <rect x="21" y="3" width="9" height="9" fill="none" stroke="#2ecc71" stroke-width="1"/>
+  <!-- Diagonale Linie von oben-links nach unten-rechts -->
+  <line x1="21" y1="3" x2="30" y2="12" stroke="#2ecc71" stroke-width="1" stroke-linecap="round"/>
+
+  <!--row two -->
+  <rect x="12" y="12" width="9" height="9" fill="none" stroke="#2ecc71" stroke-width="1"/>
+  <!-- Diagonale Linie von oben-links nach unten-rechts -->
+  <line x1="11" y1="11" x2="21" y2="21" stroke="#2ecc71" stroke-width="1" stroke-linecap="round"/>
+
+
+</svg>
