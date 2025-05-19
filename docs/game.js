@@ -3,6 +3,10 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.image('block', 'assets/block.png');
+    this.load.image('left', 'assets/left.png');
+    this.load.image('right', 'assets/right.png');
+    this.load.image('down', 'assets/down.png');
+    this.load.image('rotate', 'assets/rotate.png');
   }
 
   create() {
@@ -52,21 +56,18 @@ class GameScene extends Phaser.Scene {
     ];
     this.tetrominos = rawShapes.map(shape => this.getRotations(shape));
 
-    const controlY = this.offsetY + this.gridHeight * this.cellSize + 10;
-    const btnStyle = {
-      fontSize: '28px',
-      color: '#fff',
-      backgroundColor: 'rgba(255,255,255,0.2)',
-      padding: { x: 10, y: 10 }
-    };
-    ['◀','▶','⏬','⤴️'].forEach((sym, i) => {
-      const x = this.offsetX + i * 80;
-      const btn = this.add.text(x, controlY, sym, btnStyle).setInteractive();
+    const controlY = this.offsetY + this.gridHeight * this.cellSize + 50;
+    const iconSpacing = 80;
+    const iconSize = 48;
+    const icons = ['left', 'right', 'down', 'rotate'];
+    icons.forEach((key, i) => {
+      const x = 30+this.offsetX + i * iconSpacing;
+      const btn = this.add.image(x, controlY, key).setInteractive().setDisplaySize(iconSize, iconSize);
       btn.on('pointerdown', () => {
-        if(sym === '◀') this.move(-1,0);
-        else if(sym === '▶') this.move(1,0);
-        else if(sym === '⏬') this.moveDown();
-        else if(sym === '⤴️') this.rotate();
+        if (key === 'left') this.move(-1, 0);
+        else if (key === 'right') this.move(1, 0);
+        else if (key === 'down') this.moveDown();
+        else if (key === 'rotate') this.rotate();
       });
     });
 
