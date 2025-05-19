@@ -198,7 +198,7 @@ class GameScene extends Phaser.Scene {
         this.offsetY + this.cellSize * 10,
         'Game Over',
         { fontSize: '40px', fill: '#f00' }
-      );
+      ).setDepth(2000);
 
     this.border.setDepth(1000);
   }
