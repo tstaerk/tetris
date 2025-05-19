@@ -10,8 +10,8 @@ class GameScene extends Phaser.Scene {
     this.gridHeight = 19;
     this.cellSize = 32;
 
-    // Dynamische Höhe berücksichtigen
-    const totalHeight = this.gridHeight * this.cellSize + 60; // + Platz für Buttons
+    const reservedBottomSpace = 75;
+    const totalHeight = this.gridHeight * this.cellSize + 60 + reservedBottomSpace;
     const availableHeight = this.scale.height;
     const availableOffsetY = Math.max(10, (availableHeight - totalHeight) / 2);
 
@@ -63,10 +63,10 @@ class GameScene extends Phaser.Scene {
       const x = this.offsetX + i * 80;
       const btn = this.add.text(x, controlY, sym, btnStyle).setInteractive();
       btn.on('pointerdown', () => {
-        if(sym==='◀') this.move(-1,0);
-        else if(sym==='▶') this.move(1,0);
-        else if(sym==='⏬') this.moveDown();
-        else if(sym==='⤴️') this.rotate();
+        if(sym === '◀') this.move(-1,0);
+        else if(sym === '▶') this.move(1,0);
+        else if(sym === '⏬') this.moveDown();
+        else if(sym === '⤴️') this.rotate();
       });
     });
 
@@ -208,7 +208,6 @@ class GameScene extends Phaser.Scene {
   }
 }
 
-// Dynamische Höhe (aber feste Breite von 320)
 const config = {
   type: Phaser.AUTO,
   width: 320,
