@@ -11,10 +11,10 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.gridWidth = 10;
-    this.gridHeight = 19;
+    this.gridHeight = 17;
     this.cellSize = 32;
 
-    const reservedBottomSpace = 150;
+    const reservedBottomSpace = 75;
     const totalHeight = this.gridHeight * this.cellSize + 60 + reservedBottomSpace;
     const availableHeight = this.scale.height;
     const availableOffsetY = Math.max(10, (availableHeight - totalHeight) / 2);
