@@ -11,7 +11,7 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.gridWidth = 10;
-    this.gridHeight = 19;
+    this.gridHeight = 17;
     this.cellSize = 32;
 
     const reservedBottomSpace = 75;
