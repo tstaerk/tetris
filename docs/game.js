@@ -193,13 +193,31 @@ class GameScene extends Phaser.Scene {
     );
 
     if (this.gameOver && !this.gameOverText)
-      this.gameOverText = this.add.text(
-        this.offsetX + this.cellSize * 2,
-        this.offsetY + this.cellSize * 10,
+    {
+            this.gameOverText = this.add.text(
+        this.scale.width / 2,
+        this.scale.height / 2 - 40,
         'Game Over',
         { fontSize: '40px', fill: '#f00' }
-      ).setDepth(2000);
+      ).setOrigin(0.5).setDepth(2000);
 
+
+      const restartBtn = this.add.text(
+        this.scale.width / 2,
+        this.scale.height / 2 + 10,
+        '[ Restart ]',
+        { fontSize: '20px', fill: '#0f0', backgroundColor: '#222', padding: { x: 10, y: 5 } }
+      ).setOrigin(0.5).setDepth(2000).setInteractive();
+      restartBtn.on('pointerdown', () => window.location.reload());
+
+      const visitBtn = this.add.text(
+        this.scale.width / 2,
+        this.scale.height / 2 + 50,
+        '[ Visit www.staerk.de/thorsten ]',
+        { fontSize: '16px', fill: '#0af', backgroundColor: '#222', padding: { x: 10, y: 5 } }
+      ).setOrigin(0.5).setDepth(2000).setInteractive();
+      visitBtn.on('pointerdown', () => location.href = 'https://www.staerk.de/thorsten');
+    }
     this.border.setDepth(1000);
   }
 
