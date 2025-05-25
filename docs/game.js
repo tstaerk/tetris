@@ -240,6 +240,9 @@ clearLines() {
     return 0;
   }
 
+  // 3) vibrate
+  navigator.vibrate(200);
+
   // 4) For each full row, explode its block sprites
   fullRows.forEach(rowY => {
     const rowSprites = this.blocks.getChildren().filter(b =>
