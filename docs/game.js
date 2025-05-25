@@ -241,7 +241,7 @@ clearLines() {
   }
 
   // 3) vibrate
-  navigator.vibrate(200);
+  // navigator.vibrate(200); -> crashes according to Facebook community
 
   // 4) For each full row, explode its block sprites
   fullRows.forEach(rowY => {
