@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+// this hopefully displays index.html as it will show up on a Samsung 22 phone. 
+// the useable pixel space for the game - excluding browser bar and system buttons - is 738x1330
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scaleable=no">
+  <title>TOTRIS - Tetris with O</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    body { margin: 0; background: #000; }
+    canvas { display: block; margin: auto; }
+    iframe {
+      width: 738px;
+      height: 1330px;
+      border: 2px solid #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- Hintergrundmusik direkt in HTML -->
+  <audio id="bgm" src="assets/Helenenmarsch.mp3" loop></audio>
+  <script>
+    // Musik starten beim ersten Klick oder Tastendruck
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('bgm');
+      const onStart = () => {
+        audio.play();
+        window.removeEventListener('click', onStart);
+        window.removeEventListener('keydown', onStart);
+      };
+      window.addEventListener('click', onStart);
+      window.addEventListener('keydown', onStart);
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+  <iframe src="index.html"></iframe>
+</body>
+</html>
