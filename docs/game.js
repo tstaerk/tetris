@@ -110,26 +110,10 @@ class GameScene extends Phaser.Scene {
 
   update() {
     if (this.gameOver) return;
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.kp4)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.num4)) {
-      this.move(-1, 0);
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.kp6)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.num6)) {
-      this.move(1, 0);
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.down)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.kp2)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.num2)) {
-      this.moveDown();
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.up)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.kp5)
-     || Phaser.Input.Keyboard.JustDown(this.keyMap.num5)) {
-      this.rotate();
-    }
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keyMap.kp4) || Phaser.Input.Keyboard.JustDown(this.keyMap.num4)) this.move(-1, 0);
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.keyMap.kp6) || Phaser.Input.Keyboard.JustDown(this.keyMap.num6)) this.move(1, 0);
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keyMap.kp2) || Phaser.Input.Keyboard.JustDown(this.keyMap.num2)) this.moveDown();
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keyMap.kp5) || Phaser.Input.Keyboard.JustDown(this.keyMap.num5)) this.rotate();
   }
 
   getRotations(matrix) {
@@ -161,9 +145,7 @@ class GameScene extends Phaser.Scene {
       x: Math.floor(this.gridWidth / 2) - 1,
       y: 0
     };
-    if (!this.canMove(0, 0, this.current.rotationIndex)) {
-      this.endGame();
-    }
+    if (!this.canMove(0, 0, this.current.rotationIndex)) this.endGame();
     this.renderGrid();
   }
 
@@ -174,12 +156,7 @@ class GameScene extends Phaser.Scene {
         if (shape[y][x]) {
           const nx = this.current.x + x + dx;
           const ny = this.current.y + y + dy;
-          if (nx < 0 || nx >= this.gridWidth || ny >= this.gridHeight) {
-            return false;
-          }
-          if (ny >= 0 && this.grid[ny][nx]) {
-            return false;
-          }
+          if (nx < 0 || nx >= this.gridWidth || ny >= this.gridHeight || (ny >= 0 && this.grid[ny][nx])) return false;
         }
       }
     }
@@ -201,9 +178,7 @@ class GameScene extends Phaser.Scene {
     } else {
       this.lockPiece();
       const linesCleared = this.clearLines();
-      if (linesCleared === 0) {
-        this.spawnTetromino();
-      }
+      if (linesCleared === 0) this.spawnTetromino();
     }
   }
 
@@ -218,93 +193,63 @@ class GameScene extends Phaser.Scene {
   lockPiece() {
     this.current.rotations[this.current.rotationIndex].forEach((row, y) => {
       row.forEach((cell, x) => {
-        if (cell) {
-          this.grid[this.current.y + y][this.current.x + x] = 1;
-        }
+        if (cell) this.grid[this.current.y + y][this.current.x + x] = 1;
       });
     });
   }
 
-clearLines() {
-  const fullRows = [];
-
-  // 1) Find all full rows
-  for (let y = 0; y < this.gridHeight; y++) {
-    if (this.grid[y].every(v => v === 1)) {
-      fullRows.push(y);
+  clearLines() {
+    const fullRows = [];
+    for (let y = 0; y < this.gridHeight; y++) {
+      if (this.grid[y].every(v => v === 1)) fullRows.push(y);
     }
-  }
+    if (fullRows.length === 0) return 0;
 
-  // 2) If none, do nothing
-  if (fullRows.length === 0) {
-    return 0;
-  }
+    fullRows.forEach(rowY => {
+      const rowSprites = this.blocks.getChildren().filter(b => b.y === this.offsetY + rowY * this.cellSize);
+      rowSprites.forEach(blockSprite => {
+        const emitter = this.add.particles(
+          blockSprite.x + this.cellSize/2,
+          blockSprite.y + this.cellSize/2,
+          'spark', {
+            speed: { min: -200, max: 200 },
+            lifespan: 500,
+            scale: { start: 1, end: 0 },
+            quantity: 8,
+            gravityY: 300,
+            on: false
+          }
+        );
+        emitter.explode();
+        emitter.on('complete', () => emitter.destroy());
 
-  // 3) vibrate
-  // navigator.vibrate(200); -> crashes according to Facebook community
-
-  // 4) For each full row, explode its block sprites
-  fullRows.forEach(rowY => {
-    const rowSprites = this.blocks.getChildren().filter(b =>
-      b.y === this.offsetY + rowY * this.cellSize
-    );
-
-    rowSprites.forEach(blockSprite => {
-      // a) Create a one-shot particle emitter at the block center
-      const emitter = this.add.particles(
-        blockSprite.x + this.cellSize/2,
-        blockSprite.y + this.cellSize/2,
-        'spark',
-        {
-          speed:    { min: -200, max: 200 },
-          lifespan: 500,
-          scale:    { start: 1, end: 0 },
-          quantity: 8,
-          gravityY: 300,
-          on:       false   // explode-only mode
-        }
-      );
-      emitter.explode();  // emit all particles immediately
-      emitter.on('complete', () => emitter.destroy());
-
-      // b) Tween the block to shrink & fade, then destroy it
-      this.tweens.add({
-        targets:  blockSprite,
-        scale:    { from: 1, to: 0 },
-        alpha:    { from: 1, to: 0 },
-        ease:     'Power1',
-        duration: 300,
-        onComplete: () => blockSprite.destroy()
+        this.tweens.add({
+          targets: blockSprite,
+          scale: { from: 1, to: 0 },
+          alpha: { from: 1, to: 0 },
+          ease: 'Power1',
+          duration: 300,
+          onComplete: () => blockSprite.destroy()
+        });
       });
     });
-  });
 
-  // 5) After the explosions finish, update the grid, score, and spawn next piece
-  this.time.delayedCall(350, () => {
-    // Remove those rows from the model
-    this.grid = this.grid.filter((row, idx) => !fullRows.includes(idx));
-    // Add empty rows at the top
-    while (this.grid.length < this.gridHeight) {
-      this.grid.unshift(Array(this.gridWidth).fill(0));
-    }
-    // Update score
-    this.score += fullRows.length * 100;
-    this.scoreText.setText('Score: ' + this.score);
-    // Re-render and spawn
-    this.renderGrid();
-    this.spawnTetromino();
-  }, [], this);
+    this.time.delayedCall(350, () => {
+      this.grid = this.grid.filter((row, idx) => !fullRows.includes(idx));
+      while (this.grid.length < this.gridHeight) this.grid.unshift(Array(this.gridWidth).fill(0));
+      this.score += fullRows.length * 100;
+      this.scoreText.setText('Score: ' + this.score);
+      this.renderGrid();
+      this.spawnTetromino();
+    }, [], this);
 
-  return fullRows.length;
-}
+    return fullRows.length;
+  }
 
   renderGrid() {
-    if (this.blocks) {
-      this.blocks.clear(true, true);
-    }
+    if (this.blocks) this.blocks.clear(true, true);
     this.blocks = this.add.group();
 
-    // existing locked blocks
     for (let y = 0; y < this.gridHeight; y++) {
       for (let x = 0; x < this.gridWidth; x++) {
         if (this.grid[y][x]) {
@@ -316,7 +261,7 @@ clearLines() {
         }
       }
     }
-    // current falling tetromino
+
     this.current.rotations[this.current.rotationIndex].forEach((row, y) => {
       row.forEach((cell, x) => {
         if (cell) {
@@ -329,7 +274,6 @@ clearLines() {
       });
     });
 
-    // Game Over UI
     if (this.gameOver && !this.gameOverText) {
       this.gameOverText = this.add
         .text(this.scale.width/2, this.scale.height/2 - 40,
@@ -337,8 +281,32 @@ clearLines() {
         .setOrigin(0.5)
         .setDepth(2000);
 
+      fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgWGX7YEqp_5sXxaPt0BB9H4jPfta-lrl_cvkkqCeGWQQpM6MwoJ6PSyZ36f9fo_pwb-RQQ3fNcJA9SiwoG9z3P_d1BuuDVqWvDtxXbOyVUr37A9eRoYDtnxuRrkV1JZvlVDFkG7XueAxW96XEqj9olvaaCgVEUNDJeUXzyKRjmGK32C3SGgmeYFugd0vub10v6NV72uPbCGWLQda5LjR4LILSVJJknR9aRIOdD8oJPH6am0JaIsjuKGZ3D-h0qasWoJ8m_mtez44VNng-ECiyAFYrOEOuyEVxGg6UJ&lib=MRvR--8OAnxKTz7ir3zS_HSAC01fmXA90')
+        .then(res => res.json())
+        .then(data => {
+          const top3 = data.slice(0, 3);
+          const lines = ['HISCORE:'];
+          top3.forEach((entry, i) => {
+            lines.push(`${i + 1}. ${entry.name}: ${entry.score}`);
+          });
+          this.add.text(this.scale.width/2, this.scale.height/2,
+                        lines.join('\n'), {
+                          fontSize: '16px', fill: '#fff', align: 'center', fontFamily: 'monospace'
+                        })
+              .setOrigin(0.5)
+              .setDepth(2000);
+        })
+        .catch(() => {
+          this.add.text(this.scale.width/2, this.scale.height/2,
+                        'HISCORE:\nFehler', {
+                          fontSize: '16px', fill: '#ff0000', align: 'center'
+                        })
+              .setOrigin(0.5)
+              .setDepth(2000);
+        });
+
       const restartBtn = this.add
-        .text(this.scale.width/2, this.scale.height/2 + 10,
+        .text(this.scale.width/2, this.scale.height/2 + 80,
               '[ Restart ]', {
                 fontSize: '20px', fill: '#0f0',
                 backgroundColor: '#222', padding: { x:10, y:5 }
@@ -348,7 +316,7 @@ clearLines() {
       restartBtn.on('pointerdown', () => window.location.reload());
 
       const visitBtn = this.add
-        .text(this.scale.width/2, this.scale.height/2 + 50,
+        .text(this.scale.width/2, this.scale.height/2 + 120,
               '[ Visit www.staerk.de/thorsten ]', {
                 fontSize: '16px', fill: '#0af',
                 backgroundColor: '#222', padding: { x:10, y:5 }
